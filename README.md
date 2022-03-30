@@ -1,11 +1,12 @@
 # vite-plugin-zip-pack
+[![npm](https://img.shields.io/npm/v/vite-plugin-zip-pack)](https://www.npmjs.com/package/vite-plugin-zip-pack)
 
 Vite plugin for packing distribution/build folder into a zip file.
 
 ## Install
 
 ```bash
-`npm i -D vite-plugin-zip-pack`
+npm i -D vite-plugin-zip-pack
 ```
 
 ## Usage
