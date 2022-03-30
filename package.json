@@ -1,0 +1,49 @@
+{
+  "name": "vite-plugin-zip-pack",
+  "description": "Vite plugin for packing distribution/build folder into a zip file.",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "module": "esm/index.js",
+  "types": "dist/index.d.ts",
+  "author": "7thcyborg",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "esm"
+  ],
+  "keywords": [
+    "zip",
+    "pack",
+    "vite",
+    "plugin",
+    "vite-plugin",
+    "files",
+    "archive",
+    "output",
+    "packager",
+    "bundler",
+    "compressing"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/7th-Cyborg/vite-plugin-zip-pack"
+  },
+  "bugs": {
+    "url": "https://github.com/7th-Cyborg/vite-plugin-zip-pack/issues"
+  },
+  "homepage": "https://github.com/7th-Cyborg/vite-plugin-zip-pack#readme",
+  "scripts": {
+    "build": "tsc && tsc -p tsconfig.esm.json",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "jszip": "^3.7.1"
+  },
+  "peerDependencies": {
+    "vite": "^2.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.23",
+    "typescript": "^4.5.4"
+  }
+}
