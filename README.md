@@ -18,7 +18,7 @@ import { defineConfig } from "vite";
 import zipPack from "vite-plugin-zip-pack";
 
 export default defineConfig({
-  plugins: [zipPack()],
+  plugins: [zipPack()], // If using "type": "module" flag in package.json then use zipPack.default()
 });
 ```
 
