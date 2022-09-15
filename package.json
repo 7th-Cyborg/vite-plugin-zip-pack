@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-zip-pack",
   "description": "Vite plugin for packing distribution/build folder into a zip file.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/index.js",
   "module": "esm/index.js",
   "types": "dist/index.d.ts",
