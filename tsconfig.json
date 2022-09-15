@@ -1,11 +1,8 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
     "declaration": true,
-
-
+    "declarationDir": "dist/types",
     "lib": ["es2019", "es2020.promise", "es2020.bigint", "es2020.string"],
-    "module": "commonjs",
     "target": "es2019",
     "strict": true,
     "skipLibCheck": true,
@@ -13,8 +10,6 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-
-
     /*"useDefineForClassFields": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
