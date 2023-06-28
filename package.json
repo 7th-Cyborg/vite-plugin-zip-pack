@@ -44,7 +44,7 @@
     "renameESM": "node -e \"require('fs').rename('dist/esm/index.js', 'dist/esm/index.mjs', function(err) { if (err) console.log(err); console.log('Build successful!') })\""
   },
   "dependencies": {
-    "jszip": "^3.7.1"
+    "jszip": "^3.10.1"
   },
   "peerDependencies": {
     "vite": ">=2.x"  
