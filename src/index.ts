@@ -32,12 +32,20 @@ export default function zipPack(options?: Options): PluginOption {
     listOfFiles.forEach((fileName) => {
       const filePath = path.join(inDir, fileName);
       const file = fs.statSync(filePath);
+      const modifiedDate = new Date(file.mtime);
+      const timeZoneOffset = new Date(modifiedDate.getTime() - modifiedDate.getTimezoneOffset() * 60000);
 
       if (file?.isDirectory()) {
+        zip!.file(fileName, null, {
+          dir: true,
+          date: timeZoneOffset
+        });
         const dir = zip!.folder(fileName);
+
         addFilesToZipArchive(dir, filePath);
       } else {
-        zip!.file(fileName, fs.readFileSync(filePath));
+
+        zip!.file(fileName, fs.readFileSync(filePath), { date: timeZoneOffset });
       }
     });
   }
