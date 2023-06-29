@@ -41,6 +41,11 @@ export interface Options {
    * @default `dist.zip`
    */
   outFileName?: string;
+  /**
+   * Path prefix for the files included in the zip file
+   * @default ``
+   */
+  pathPrefix?: string;
 }
 ```
 ## License
