@@ -46,6 +46,11 @@ export interface Options {
    * @default ``
    */
   pathPrefix?: string;
+  /**
+   * Callback, which is executed after the zip file was created
+   * err is only defined if the save function fails
+   */
+  done?: (err: Error | undefined) => void
 }
 ```
 ## License
