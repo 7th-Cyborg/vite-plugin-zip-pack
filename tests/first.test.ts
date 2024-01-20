@@ -1,26 +1,27 @@
 import { expect, test, beforeEach, afterEach, beforeAll, afterAll } from 'vitest'
 import fs from 'fs'
+import JSZip from 'jszip'
 import packPlugin, { Options } from '../src'
 import { PluginOption } from 'vite'
 
 beforeAll(async ()=>{
 	if(fs.existsSync('tests/dist')) 
-		fs.rmSync("tests/dist", { force: true, recursive: true })
+		await fs.promises.rm("tests/dist", { force: true, recursive: true })
   if(fs.existsSync('tests/outDist')) 
-		fs.rmSync("tests/outDist", { force: true, recursive: true })	
+		await fs.promises.rm("tests/outDist", { force: true, recursive: true })	
 	await CreateDumpFiles()
 })
 
-afterAll(()=>{
+afterAll(async ()=>{
 //	if(fs.existsSync('tests/dist')) 
 //		fs.rmSync("tests/dist", { force: true, recursive: true })	
   if(fs.existsSync('tests/outDist')) 
-		fs.rmSync("tests/outDist", { force: true, recursive: true })	
+		await fs.promises.rm("tests/outDist", { force: true, recursive: true })	
 })
 
-afterEach(()=>{
+afterEach(async ()=>{
 	if(fs.existsSync('tests/dist/out.zip'))
-		fs.rmSync('tests/dist/out.zip')
+		await fs.promises.rm('tests/dist/out.zip')
 })
 
 async function CreateDumpFiles(){ 
@@ -53,11 +54,10 @@ test('build zip', async () => {
 test('generated zip output', async () => {
 	const inst: any = packPlugin(options())
 	await inst.closeBundle() 
-	const zipStats = fs.statSync('tests/dist/out.zip')
+	const zipStats = await fs.promises.stat('tests/dist/out.zip')
 	expect(zipStats.size).greaterThan(11)
 
 	const content = await fs.promises.readFile('tests/dist/out.zip')
-	const JSZip = (await import('jszip')).default
 	const archive = await JSZip().loadAsync(content)
 	expect(!!archive.files['a.js']).toBeTruthy()
 	expect(!!archive.files['b.ts']).toBeTruthy()
@@ -104,11 +104,19 @@ test('other output path', async () => {
 	expect(fs.existsSync('tests/outDist/out.zip')).toBeTruthy()
 })
 
-/*
+
 test('path prefix', async () => {
 	const op = options()
-	op.outDir = 'tests/outDist'
+	op.pathPrefix = 'my-pref'
 	const inst: any = packPlugin(op)
 	await inst.closeBundle()
-	expect(fs.existsSync('tests/outDist/out.zip')).toBeTruthy()
-})*/
+	expect(fs.existsSync('tests/dist/out.zip')).toBeTruthy()
+
+	const content = await fs.promises.readFile('tests/dist/out.zip')
+	const archive = await JSZip().loadAsync(content)
+	expect(!!archive.files['my-pref/a.js']).toBeTruthy()
+	expect(!!archive.files['a.js']).not.toBeTruthy()
+	expect(!!archive.files['my-pref/b.ts']).toBeTruthy()
+	expect(!!archive.files['my-pref/package.json']).toBeTruthy()
+	expect(!!archive.files['my-pref/assets/c.txt']).toBeTruthy()
+})
