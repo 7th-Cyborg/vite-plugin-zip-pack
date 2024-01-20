@@ -103,10 +103,7 @@ export default function zipPack(options?: Options): PluginOption {
         console.log("\x1b[36m%s\x1b[0m", `Zip packing - "${inDir}" folder :`);
         
         if (!fs.existsSync(inDir)) {
-          return console.log(
-            "\x1b[31m%s\x1b[0m",
-            `  - "${inDir}" folder does not exist!`
-          );
+          throw new Error(` - "${inDir}" folder does not exist!`)
         }
 
         if (!fs.existsSync(outDir)) {
@@ -129,17 +126,16 @@ export default function zipPack(options?: Options): PluginOption {
           });
           const zipFolder = zip.folder(pathPrefix);
           
-          if(zipFolder) {
-            archive = zipFolder;
-          } else {
+          if(!zipFolder) 
             throw new Error("Files could not be loaded from 'pathPrefix'")
-          }
+
+          archive = zipFolder!
         } else {
           archive = zip;
         }
 
         console.log("\x1b[32m%s\x1b[0m", "  - Preparing files.");
-        addFilesToZipArchive(archive, inDir);
+        await addFilesToZipArchive(archive, inDir);
 
         console.log("\x1b[32m%s\x1b[0m", "  - Creating zip archive.");
         await createZipArchive(archive)
