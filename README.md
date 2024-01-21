@@ -51,6 +51,14 @@ export interface Options {
    * err is only defined if the save function fails
    */
   done?: (err: Error | undefined) => void
+  /**
+   * Filter function equivalent to Array.prototype.filter 
+   * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
+   * is executed for every files and directories
+   * files and directories are only included when return ist true.
+   * All files are included when function is not defined
+   */
+  filter?: (fileName: string, filePath: string, isDirectory: boolean) => Boolean
 }
 ```
 ## License
