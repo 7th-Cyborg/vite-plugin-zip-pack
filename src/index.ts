@@ -33,6 +33,11 @@ export interface Options {
    * err is only defined if the save function fails
    */
   done?: (err: Error | undefined) => void
+   /**
+   * Callback, which is executed after the zip file was created
+   * err is only defined if the save function fails
+   */
+  filter?: (fileName: string, filePath: string, isDirectory: boolean) => Boolean
 }
 
 export default function zipPack(options?: Options): PluginOption {
@@ -41,6 +46,7 @@ export default function zipPack(options?: Options): PluginOption {
   const outFileName = options?.outFileName || "dist.zip";
   const pathPrefix = options?.pathPrefix || '';
   const done = options?.done || function (){};
+  const filter = options?.filter || (() => true );
 
   async function addFilesToZipArchive(zip: JSZip, inDir: string) {
     const listOfFiles = await fs.promises.readdir(inDir);
@@ -51,6 +57,9 @@ export default function zipPack(options?: Options): PluginOption {
       const timeZoneOffsetDate = timeZoneOffset(new Date(file.mtime));
 
       if (file.isDirectory()) {
+        if(!filter(fileName, filePath, true)) {
+          continue;
+        }
         zip.file(fileName, null, {
           dir: true,
           date: timeZoneOffsetDate
@@ -62,11 +71,13 @@ export default function zipPack(options?: Options): PluginOption {
 
         await addFilesToZipArchive(dir, filePath);
       } else {
-        zip.file( 
-          fileName, 
-          await fs.promises.readFile(filePath), 
-          { date: timeZoneOffsetDate }
-        );
+        if(filter(fileName, filePath, false)) {
+          zip.file( 
+            fileName, 
+            await fs.promises.readFile(filePath), 
+            { date: timeZoneOffsetDate }
+          );
+        }
       }
     }
   }
