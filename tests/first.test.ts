@@ -13,11 +13,11 @@ beforeAll(async ()=>{
 })
 
 afterAll(async ()=>{
-//	if(fs.existsSync('tests/dist')) 
-//		fs.rmSync("tests/dist", { force: true, recursive: true })	
+	if(fs.existsSync('tests/dist')) 
+		fs.rmSync("tests/dist", { force: true, recursive: true })	
   if(fs.existsSync('tests/outDist')) 
 		await fs.promises.rm("tests/outDist", { force: true, recursive: true })	
-})
+}) 
 
 afterEach(async ()=>{
 	if(fs.existsSync('tests/dist/out.zip'))
@@ -31,6 +31,12 @@ async function CreateDumpFiles(){
 	await fs.promises.writeFile('tests/dist/package.json', '{"p": "p"}')
 	await fs.promises.mkdir('tests/dist/assets/')
 	await fs.promises.writeFile('tests/dist/assets/c.txt', 'c')
+}
+
+async function GetArchive(filePath: string): Promise<JSZip> {
+	const content = await fs.promises.readFile(filePath)
+	const archive = await JSZip().loadAsync(content)
+	return archive
 }
 
 test('meta check', async () => {
@@ -57,8 +63,7 @@ test('generated zip output', async () => {
 	const zipStats = await fs.promises.stat('tests/dist/out.zip')
 	expect(zipStats.size).greaterThan(11)
 
-	const content = await fs.promises.readFile('tests/dist/out.zip')
-	const archive = await JSZip().loadAsync(content)
+	const archive = await GetArchive('tests/dist/out.zip')
 	expect(!!archive.files['a.js']).toBeTruthy()
 	expect(!!archive.files['b.ts']).toBeTruthy()
 	expect(!!archive.files['package.json']).toBeTruthy()
@@ -112,11 +117,30 @@ test('path prefix', async () => {
 	await inst.closeBundle()
 	expect(fs.existsSync('tests/dist/out.zip')).toBeTruthy()
 
-	const content = await fs.promises.readFile('tests/dist/out.zip')
-	const archive = await JSZip().loadAsync(content)
+	const archive = await GetArchive('tests/dist/out.zip')
 	expect(!!archive.files['my-pref/a.js']).toBeTruthy()
 	expect(!!archive.files['a.js']).not.toBeTruthy()
 	expect(!!archive.files['my-pref/b.ts']).toBeTruthy()
 	expect(!!archive.files['my-pref/package.json']).toBeTruthy()
 	expect(!!archive.files['my-pref/assets/c.txt']).toBeTruthy()
+})
+
+test('filter files', async () => {
+	const op = options()
+	op.filter = (fileName, filePath, isDir) => {
+	  return fileName === 'a.js' || 
+		isDir || 					// is in this case equal to: 
+									// filePath.endsWith('assets') 
+		/[a-z]*.txt/.test(fileName) // is in this case eqaul to: 
+									// fileName === 'c.txt'  	
+	}
+
+	const inst: any = packPlugin(op)
+	await inst.closeBundle() 
+
+	const archive = await GetArchive('tests/dist/out.zip')
+	expect(!!archive.files['a.js']).toBeTruthy()
+	expect(!!archive.files['b.ts']).not.toBeTruthy()
+	expect(!!archive.files['package.json']).not.toBeTruthy()
+	expect(!!archive.files['assets/c.txt']).toBeTruthy()
 })
