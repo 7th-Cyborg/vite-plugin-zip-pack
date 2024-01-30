@@ -121,7 +121,7 @@ export default function zipPack(options?: Options): PluginOption {
         }
 
         if (!fs.existsSync(outDir)) {
-          await fs.promises.mkdir(outDir)
+          await fs.promises.mkdir(outDir, { recursive: true });
         }
 
         if (pathPrefix && path.isAbsolute(pathPrefix)) {
