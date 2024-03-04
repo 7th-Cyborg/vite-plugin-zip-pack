@@ -2,15 +2,19 @@
   "name": "vite-plugin-zip-pack",
   "description": "Vite plugin for packing distribution/build folder into a zip file.",
   "version": "1.2.1",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.mjs",
-  "types": "dist/types/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.mjs",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts",
-      "default": "./dist/esm/index.mjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "type": "module",
@@ -44,8 +48,7 @@
   },
   "homepage": "https://github.com/7th-Cyborg/vite-plugin-zip-pack#readme",
   "scripts": {
-    "build": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json && npm run renameESM",
-    "renameESM": "node -e \"require('fs').rename('dist/esm/index.js', 'dist/esm/index.mjs', function(err) { if (err) console.log(err); console.log('Build successful!') })\"",
+    "build": "unbuild",
     "test": "vitest"
   },
   "dependencies": {
@@ -56,6 +59,7 @@
   },
   "devDependencies": {
     "typescript": "^4.5.4",
+    "unbuild": "^2.0.0",
     "vitest": "^1.2.1"
   }
 }
