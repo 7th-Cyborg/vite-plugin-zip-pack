@@ -13,7 +13,6 @@
       "default": "./dist/esm/index.mjs"
     }
   },
-  "type": "module",
   "author": "Darko Ceranac (https://github.com/7th-Cyborg)",
   "contributors": [
     "Reiner Bamberger (https://github.com/reinerBa/)"
@@ -55,7 +54,7 @@
     "vite": ">=2.x"
   },
   "devDependencies": {
-    "typescript": "^4.5.4",
+    "typescript": "^5.4.2",
     "vitest": "^1.2.1"
   }
 }
