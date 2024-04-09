@@ -46,20 +46,20 @@ test('meta check', async () => {
 	expect(inst.name).toBe('vite-plugin-zip-pack')
 	expect(inst.apply).toBe('build')
 	expect(inst.enforce).toBe('post')
-	expect(inst.closeBundle).instanceOf(Function)
+	expect(inst.closeBundle.handler).instanceOf(Function)
 })
 
 const options =()=> ({inDir: 'tests/dist', outDir: 'tests/dist', outFileName: "out.zip", done: () => {}} as Options)
 
 test('build zip', async () => {
 	const inst: any = packPlugin(options())
-	await inst.closeBundle() 
+	await inst.closeBundle.handler() 
 	expect(fs.existsSync('tests/dist/out.zip')).toBeTruthy()
 })
 
 test('generated zip output', async () => {
 	const inst: any = packPlugin(options())
-	await inst.closeBundle() 
+	await inst.closeBundle.handler() 
 	const zipStats = await fs.promises.stat('tests/dist/out.zip')
 	expect(zipStats.size).greaterThan(11)
 
@@ -76,7 +76,7 @@ test('call done callback', async () => {
 	const op = options()
 	op.done = done
 	const inst: any = packPlugin(op)
-	await inst.closeBundle() 
+	await inst.closeBundle.handler() 
 	await fs.promises.access('tests/dist/out.zip')
 	expect(fs.existsSync('tests/dist/out.zip')).toBeTruthy()
 	expect(isCalled).toBeTruthy()
@@ -88,7 +88,7 @@ test('call done callback with error', async () => {
 	op.inDir = 'undefined'
 	op.done = (ex: Error | undefined) => { hadError = Boolean(ex) }
 	const inst: any = packPlugin(op)
-	await inst.closeBundle()
+	await inst.closeBundle.handler()
 	expect(!fs.existsSync('tests/dist/out.zip')).toBeTruthy()
 	expect(hadError).toBeTruthy()
 })
@@ -97,7 +97,7 @@ test('other filename', async () => {
 	const op = options()
 	op.outFileName = 'outy.zip'
 	const inst: any = packPlugin(op)
-	await inst.closeBundle()
+	await inst.closeBundle.handler()
 	expect(fs.existsSync('tests/dist/outy.zip')).toBeTruthy()
 })
 
@@ -105,7 +105,7 @@ test('other output path', async () => {
 	const op = options()
 	op.outDir = 'tests/outDist'
 	const inst: any = packPlugin(op)
-	await inst.closeBundle()
+	await inst.closeBundle.handler()
 	expect(fs.existsSync('tests/outDist/out.zip')).toBeTruthy()
 })
 
@@ -114,7 +114,7 @@ test('path prefix', async () => {
 	const op = options()
 	op.pathPrefix = 'my-pref'
 	const inst: any = packPlugin(op)
-	await inst.closeBundle()
+	await inst.closeBundle.handler()
 	expect(fs.existsSync('tests/dist/out.zip')).toBeTruthy()
 
 	const archive = await GetArchive('tests/dist/out.zip')
@@ -136,7 +136,7 @@ test('filter files', async () => {
 	}
 
 	const inst: any = packPlugin(op)
-	await inst.closeBundle() 
+	await inst.closeBundle.handler() 
 
 	const archive = await GetArchive('tests/dist/out.zip')
 	expect(!!archive.files['a.js']).toBeTruthy()
