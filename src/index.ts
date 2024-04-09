@@ -112,63 +112,66 @@ export default function zipPack(options?: Options): PluginOption {
     name: "vite-plugin-zip-pack",
     apply: "build",
     enforce: "post",
-    async closeBundle() {
-      try {
-        console.log("\x1b[36m%s\x1b[0m", `Zip packing - "${inDir}" folder :`);
-        
-        if (!fs.existsSync(inDir)) {
-          throw new Error(` - "${inDir}" folder does not exist!`)
-        }
+    closeBundle: {
+      sequential: true,
+      async handler() {
+        try {
+          console.log("\x1b[36m%s\x1b[0m", `Zip packing - "${inDir}" folder :`);
 
-        if (!fs.existsSync(outDir)) {
-          await fs.promises.mkdir(outDir, { recursive: true });
-        }
+          if (!fs.existsSync(inDir)) {
+            throw new Error(` - "${inDir}" folder does not exist!`)
+          }
 
-        if (pathPrefix && path.isAbsolute(pathPrefix)) {
-          throw new Error('"pathPrefix" must be a relative path');
-        }
+          if (!fs.existsSync(outDir)) {
+            await fs.promises.mkdir(outDir, { recursive: true });
+          }
 
-        const zip = new JSZip();
-        let archive: JSZip;
+          if (pathPrefix && path.isAbsolute(pathPrefix)) {
+            throw new Error('"pathPrefix" must be a relative path');
+          }
 
-        if (pathPrefix) {
-          const timeZoneOffsetDate = timeZoneOffset(new Date());
+          const zip = new JSZip();
+          let archive: JSZip;
 
-          zip.file(pathPrefix, null, {
-            dir: true,
-            date: timeZoneOffsetDate
-          });
-          const zipFolder = zip.folder(pathPrefix);
-          
-          if(!zipFolder) 
-            throw new Error("Files could not be loaded from 'pathPrefix'")
+          if (pathPrefix) {
+            const timeZoneOffsetDate = timeZoneOffset(new Date());
 
-          archive = zipFolder!
-        } else {
-          archive = zip;
-        }
+            zip.file(pathPrefix, null, {
+              dir: true,
+              date: timeZoneOffsetDate
+            });
+            const zipFolder = zip.folder(pathPrefix);
 
-        console.log("\x1b[32m%s\x1b[0m", "  - Preparing files.");
-        await addFilesToZipArchive(archive, inDir);
+            if(!zipFolder)
+              throw new Error("Files could not be loaded from 'pathPrefix'")
 
-        console.log("\x1b[32m%s\x1b[0m", "  - Creating zip archive.");
-        await createZipArchive(archive)
+            archive = zipFolder!
+          } else {
+            archive = zip;
+          }
 
-        console.log("\x1b[32m%s\x1b[0m", "  - Done.");
-      } catch (error: any) {
-        if (error) {
+          console.log("\x1b[32m%s\x1b[0m", "  - Preparing files.");
+          await addFilesToZipArchive(archive, inDir);
+
+          console.log("\x1b[32m%s\x1b[0m", "  - Creating zip archive.");
+          await createZipArchive(archive)
+
+          console.log("\x1b[32m%s\x1b[0m", "  - Done.");
+        } catch (error: any) {
+          if (error) {
+            console.log(
+                "\x1b[31m%s\x1b[0m",
+                `  - ${error}`
+            );
+          }
+
           console.log(
-            "\x1b[31m%s\x1b[0m",
-            `  - ${error}`
+              "\x1b[31m%s\x1b[0m",
+              "  - Something went wrong while building zip file!"
           );
+          done(error)
         }
-
-        console.log(
-          "\x1b[31m%s\x1b[0m",
-          "  - Something went wrong while building zip file!"
-        );
-        done(error)
       }
-    }
+    },
   };
 }
