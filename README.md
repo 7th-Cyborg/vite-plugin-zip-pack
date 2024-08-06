@@ -59,6 +59,11 @@ export interface Options {
    * All files are included when function is not defined
    */
   filter?: (fileName: string, filePath: string, isDirectory: boolean) => Boolean
+  /**
+   * Input Directory
+   * @default true
+   */
+  enableLogging?: boolean;
 }
 ```
 ## License
