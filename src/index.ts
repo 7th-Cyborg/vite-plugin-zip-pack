@@ -41,6 +41,11 @@ export interface Options {
    * All files are included when function is not defined
    */
   filter?: (fileName: string, filePath: string, isDirectory: boolean) => Boolean
+  /**
+   * Input Directory
+   * @default true
+   */
+  enableLogging?: boolean;
 }
 
 export default function zipPack(options?: Options): PluginOption {
@@ -50,6 +55,7 @@ export default function zipPack(options?: Options): PluginOption {
   const pathPrefix = options?.pathPrefix || '';
   const done = options?.done || function (){};
   const filter = options?.filter || (() => true );
+  const enableLogging = options?.enableLogging || true;
 
   async function addFilesToZipArchive(zip: JSZip, inDir: string) {
     const listOfFiles = await fs.promises.readdir(inDir);
@@ -150,13 +156,23 @@ export default function zipPack(options?: Options): PluginOption {
             archive = zip;
           }
 
-          console.log("\x1b[32m%s\x1b[0m", "  - Preparing files.");
+          if(enableLogging) {
+            console.log("\x1b[32m%s\x1b[0m", "  - Preparing files.");
+          }
+          
           await addFilesToZipArchive(archive, inDir);
 
-          console.log("\x1b[32m%s\x1b[0m", "  - Creating zip archive.");
+          if(enableLogging) {
+            console.log("\x1b[32m%s\x1b[0m", "  - Creating zip archive.");
+          }
+          
           await createZipArchive(archive)
 
-          console.log("\x1b[32m%s\x1b[0m", "  - Done.");
+          if(enableLogging) {
+            console.log("\x1b[32m%s\x1b[0m", "  - Done.");
+          } else {
+            console.log("\x1b[32m%s\x1b[0m", "  - Created zip archive.");
+          }
         } catch (error: any) {
           if (error) {
             console.log(
