@@ -55,7 +55,7 @@ export default function zipPack(options?: Options): PluginOption {
   const pathPrefix = options?.pathPrefix || '';
   const done = options?.done || function (){};
   const filter = options?.filter || (() => true );
-  const enableLogging = options?.enableLogging || true;
+  const { enableLogging = true } = options || {};
 
   async function addFilesToZipArchive(zip: JSZip, inDir: string) {
     const listOfFiles = await fs.promises.readdir(inDir);
