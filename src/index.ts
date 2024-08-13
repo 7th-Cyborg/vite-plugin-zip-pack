@@ -42,7 +42,7 @@ export interface Options {
    */
   filter?: (fileName: string, filePath: string, isDirectory: boolean) => Boolean
   /**
-   * Input Directory
+   * Enable logging
    * @default true
    */
   enableLogging?: boolean;
